@@ -86,6 +86,9 @@ type RingConfig struct {
 
 	UnregisterOnShutdown bool `yaml:"unregister_on_shutdown"`
 
+	// Prefer IPv6 addresses for hash ring members
+	PreferInet6 bool `yaml:"prefer_inet6"`
+
 	// Injected internally
 	ListenPort      int           `yaml:"-"`
 	RingCheckPeriod time.Duration `yaml:"-"`
@@ -142,7 +145,7 @@ func (cfg *RingConfig) ToRingConfig() ring.Config {
 }
 
 func (cfg *RingConfig) ToLifecyclerConfig(logger log.Logger) (ring.BasicLifecyclerConfig, error) {
-	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger)
+	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger, cfg.PreferInet6)
 	if err != nil {
 		return ring.BasicLifecyclerConfig{}, err
 	}

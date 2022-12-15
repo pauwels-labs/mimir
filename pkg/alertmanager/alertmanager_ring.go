@@ -62,6 +62,9 @@ type RingConfig struct {
 	InstanceAddr           string   `yaml:"instance_addr" category:"advanced"`
 	InstanceZone           string   `yaml:"instance_availability_zone" category:"advanced"`
 
+	// Prefer IPv6 addresses for hash ring members
+	PreferInet6 bool `yaml:"prefer_inet6"`
+
 	// Injected internally
 	ListenPort      int           `yaml:"-"`
 	RingCheckPeriod time.Duration `yaml:"-"`
@@ -103,7 +106,7 @@ func (cfg *RingConfig) RegisterFlags(f *flag.FlagSet, logger log.Logger) {
 // ToLifecyclerConfig returns a LifecyclerConfig based on the alertmanager
 // ring config.
 func (cfg *RingConfig) ToLifecyclerConfig(logger log.Logger) (ring.BasicLifecyclerConfig, error) {
-	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger)
+	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger, cfg.PreferInet6)
 	if err != nil {
 		return ring.BasicLifecyclerConfig{}, err
 	}

@@ -48,12 +48,15 @@ type RingConfig struct {
 
 	// Instance details
 	InstanceID             string   `yaml:"instance_id" doc:"default=<hostname>" category:"advanced"`
-	InstanceInterfaceNames []string `yaml:"instance_interface_names" doc:"default=[<private network interfaces>]"`
+	InstanceInterfaceNames []string `yaml:"instance_interface_names" doc:"default=[<private network interfoaces>]"`
 	InstancePort           int      `yaml:"instance_port" category:"advanced"`
 	InstanceAddr           string   `yaml:"instance_addr" category:"advanced"`
 
 	// Injected internally
 	ListenPort int `yaml:"-"`
+
+	// Prefer IPv6 addresses for hash ring members
+	PreferInet6 bool `yaml:"prefer_inet6"`
 }
 
 // RegisterFlags adds the flags required to config this to the given flag.FlagSet.
@@ -80,7 +83,7 @@ func (cfg *RingConfig) RegisterFlags(f *flag.FlagSet, logger log.Logger) {
 
 // ToBasicLifecyclerConfig returns a ring.BasicLifecyclerConfig based on the query-scheduler ring config.
 func (cfg *RingConfig) ToBasicLifecyclerConfig(logger log.Logger) (ring.BasicLifecyclerConfig, error) {
-	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger)
+	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger, cfg.PreferInet6)
 	if err != nil {
 		return ring.BasicLifecyclerConfig{}, err
 	}

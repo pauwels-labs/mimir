@@ -50,6 +50,9 @@ type RingConfig struct {
 	// Injected internally
 	ListenPort int `yaml:"-"`
 
+	// Prefer IPv6 addresses for hash ring members
+	PreferInet6 bool `yaml:"prefer_inet6"`
+
 	// Used for testing
 	SkipUnregister bool `yaml:"-"`
 }
@@ -79,7 +82,7 @@ func (cfg *RingConfig) RegisterFlags(f *flag.FlagSet, logger log.Logger) {
 // ToLifecyclerConfig returns a LifecyclerConfig based on the ruler
 // ring config.
 func (cfg *RingConfig) ToLifecyclerConfig(logger log.Logger) (ring.BasicLifecyclerConfig, error) {
-	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger)
+	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger, cfg.PreferInet6)
 	if err != nil {
 		return ring.BasicLifecyclerConfig{}, err
 	}
