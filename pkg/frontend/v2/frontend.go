@@ -49,6 +49,9 @@ type Config struct {
 	Addr string `yaml:"address" category:"advanced"`
 	Port int    `category:"advanced"`
 
+	// Enable IPv6 addresses for hash ring members
+	EnableInet6 bool `yaml:"enable_inet6"`
+
 	// This configuration is injected internally.
 	QuerySchedulerDiscovery schedulerdiscovery.Config `yaml:"-"`
 }
