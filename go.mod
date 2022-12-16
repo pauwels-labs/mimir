@@ -16,7 +16,6 @@ require (
 	github.com/golang/snappy v0.0.4
 	github.com/google/gopacket v1.1.19
 	github.com/gorilla/mux v1.8.0
-	github.com/grafana/dskit v0.0.0-20221213192733-6a4490513ed8
 	github.com/grafana/e2e v0.1.1-0.20221115065638-fe4609fcbc71
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/json-iterator/go v1.1.12
@@ -58,6 +57,7 @@ require (
 	github.com/google/go-github/v32 v32.1.0
 	github.com/google/uuid v1.3.0
 	github.com/grafana-tools/sdk v0.0.0-20211220201350-966b3088eec9
+	github.com/grafana/dskit v0.0.0-20221215111409-53bd6afef7d0
 	github.com/grafana/regexp v0.0.0-20221005093135-b4c2bcb0a4b6
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db
 	github.com/open-telemetry/opentelemetry-collector-contrib/pkg/translator/prometheusremotewrite v0.54.0
@@ -251,3 +251,5 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.45.0
 // + https://github.com/go-yaml/yaml/pull/691
 // + https://github.com/go-yaml/yaml/pull/876
 replace gopkg.in/yaml.v3 => github.com/colega/go-yaml-yaml v0.0.0-20220720105220-255a8d16d094
+
+replace github.com/grafana/dskit v0.0.0-20221215111409-53bd6afef7d0 => github.com/pauwels-labs/dskit v0.0.0-20221215181219-a8408689110f

@@ -7,7 +7,7 @@ package alertmanager
 
 import (
 	"flag"
-	"fmt"
+	"net/netip"
 	"os"
 	"time"
 
@@ -62,6 +62,9 @@ type RingConfig struct {
 	InstanceAddr           string   `yaml:"instance_addr" category:"advanced"`
 	InstanceZone           string   `yaml:"instance_availability_zone" category:"advanced"`
 
+	// Enable IPv6 addresses for hash ring members
+	EnableInet6 bool `yaml:"enable_inet6"`
+
 	// Injected internally
 	ListenPort      int           `yaml:"-"`
 	RingCheckPeriod time.Duration `yaml:"-"`
@@ -103,16 +106,17 @@ func (cfg *RingConfig) RegisterFlags(f *flag.FlagSet, logger log.Logger) {
 // ToLifecyclerConfig returns a LifecyclerConfig based on the alertmanager
 // ring config.
 func (cfg *RingConfig) ToLifecyclerConfig(logger log.Logger) (ring.BasicLifecyclerConfig, error) {
-	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger)
+	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger, cfg.EnableInet6)
 	if err != nil {
 		return ring.BasicLifecyclerConfig{}, err
 	}
 
 	instancePort := ring.GetInstancePort(cfg.InstancePort, cfg.ListenPort)
+	addrPort := netip.AddrPortFrom(netip.MustParseAddr(instanceAddr), uint16(instancePort))
 
 	return ring.BasicLifecyclerConfig{
 		ID:                  cfg.InstanceID,
-		Addr:                fmt.Sprintf("%s:%d", instanceAddr, instancePort),
+		Addr:                addrPort.String(),
 		HeartbeatPeriod:     cfg.HeartbeatPeriod,
 		HeartbeatTimeout:    cfg.HeartbeatTimeout,
 		TokensObservePeriod: 0,

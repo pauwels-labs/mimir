@@ -53,6 +53,9 @@ type RingConfig struct {
 
 	// Used only for testing.
 	JoinAfter time.Duration `yaml:"-"`
+
+	// Enable IPv6 addresses for hash ring members
+	EnableInet6 bool `yaml:"enable_inet6"`
 }
 
 // RegisterFlags adds the flags required to config this to the given FlagSet
@@ -141,6 +144,7 @@ func (cfg *RingConfig) ToLifecyclerConfig() ring.LifecyclerConfig {
 	lc.Port = cfg.InstancePort
 	lc.ID = cfg.InstanceID
 	lc.ListenPort = cfg.ListenPort
+	lc.EnableInet6 = cfg.EnableInet6
 
 	return lc
 }

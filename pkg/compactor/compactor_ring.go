@@ -45,6 +45,9 @@ type RingConfig struct {
 	WaitActiveInstanceTimeout time.Duration `yaml:"wait_active_instance_timeout" category:"advanced"`
 
 	ObservePeriod time.Duration `yaml:"-"`
+
+	// Enable IPv6 addresses for hash ring members
+	EnableInet6 bool `yaml:"enable_inet6"`
 }
 
 // RegisterFlags adds the flags required to config this to the given FlagSet
@@ -107,6 +110,7 @@ func (cfg *RingConfig) ToLifecyclerConfig() ring.LifecyclerConfig {
 	lc.JoinAfter = 0
 	lc.MinReadyDuration = 0
 	lc.FinalSleep = 0
+	lc.EnableInet6 = cfg.EnableInet6
 
 	// We use a safe default instead of exposing to config option to the user
 	// in order to simplify the config.

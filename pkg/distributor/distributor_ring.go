@@ -7,7 +7,7 @@ package distributor
 
 import (
 	"flag"
-	"fmt"
+	"net/netip"
 	"os"
 	"time"
 
@@ -43,6 +43,9 @@ type RingConfig struct {
 
 	// Injected internally
 	ListenPort int `yaml:"-"`
+
+	// Enable IPv6 addresses for hash ring members
+	EnableInet6 bool `yaml:"enable_inet6"`
 }
 
 // RegisterFlags adds the flags required to config this to the given FlagSet
@@ -68,16 +71,17 @@ func (cfg *RingConfig) RegisterFlags(f *flag.FlagSet, logger log.Logger) {
 }
 
 func (cfg *RingConfig) ToBasicLifecyclerConfig(logger log.Logger) (ring.BasicLifecyclerConfig, error) {
-	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger)
+	instanceAddr, err := ring.GetInstanceAddr(cfg.InstanceAddr, cfg.InstanceInterfaceNames, logger, cfg.EnableInet6)
 	if err != nil {
 		return ring.BasicLifecyclerConfig{}, err
 	}
 
 	instancePort := ring.GetInstancePort(cfg.InstancePort, cfg.ListenPort)
+	addrPort := netip.AddrPortFrom(netip.MustParseAddr(instanceAddr), uint16(instancePort))
 
 	return ring.BasicLifecyclerConfig{
 		ID:                              cfg.InstanceID,
-		Addr:                            fmt.Sprintf("%s:%d", instanceAddr, instancePort),
+		Addr:                            addrPort.String(),
 		HeartbeatPeriod:                 cfg.HeartbeatPeriod,
 		HeartbeatTimeout:                cfg.HeartbeatTimeout,
 		TokensObservePeriod:             0,
